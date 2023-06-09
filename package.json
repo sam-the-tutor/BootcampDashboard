@@ -13,7 +13,7 @@
     "build": "vite build src/frontend --config vite.config.react.js",
     "start": "vite src/frontend --config vite.config.react.js",
     "prestart": "npm run generate",
-    "generate": "dfx generate whoami"
+    "generate": "dfx generate backend"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^5.0.8",
