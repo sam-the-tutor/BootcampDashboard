@@ -1,8 +1,6 @@
 import { AuthClient } from "@dfinity/auth-client";
-import React, { createContext, useContext, useEffect, useState, } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { canisterId, createActor } from "../declarations/backend";
-import { useNavigate } from "react-router-dom";
-
 
 const AuthContext = createContext();
 
@@ -34,18 +32,12 @@ const defaultOptions = {
  * @param {AuthClientLoginOptions} options.loginOptions - Options for the AuthClient.login() method
  * @returns
  */
-
 export const useAuthClient = (options = defaultOptions) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authClient, setAuthClient] = useState(null);
   const [identity, setIdentity] = useState(null);
   const [principal, setPrincipal] = useState(null);
   const [whoamiActor, setWhoamiActor] = useState(null);
-  const [isAdmin, setIsAdmin] = useState('');
-  const [isGraduate, setIsGraduate] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate()
-
 
   useEffect(() => {
     // Initialize AuthClient
@@ -53,31 +45,6 @@ export const useAuthClient = (options = defaultOptions) => {
       updateClient(client);
     });
   }, []);
-
-
-  async function setCredentials(client){
-    if(whoamiActor !== null){
-    
-    const admin = await whoamiActor.isAdmin(principal);
-    console.log("isAdmin :", admin)
-    console.log("Principal : ", principal.toString())
-    const graduate = await whoamiActor.isGraduate(principal);
-   
-    
-    if(admin){
-      setIsAdmin(admin)
-      navigate('/admin')
-    }
-    else if(graduate){
-      setIsGraduate(graduate)
-      navigate('/graduate')
-    }else{
-      navigate('/')
-    }
-    }
-
-  }
-  
 
   const login = () => {
     authClient.login({
@@ -88,12 +55,9 @@ export const useAuthClient = (options = defaultOptions) => {
     });
   };
 
-
   async function updateClient(client) {
     const isAuthenticated = await client.isAuthenticated();
     setIsAuthenticated(isAuthenticated);
-
-    
 
     const identity = client.getIdentity();
     setIdentity(identity);
@@ -103,7 +67,6 @@ export const useAuthClient = (options = defaultOptions) => {
 
     setAuthClient(client);
 
-  
     const actor = createActor(canisterId, {
       agentOptions: {
         identity,
@@ -111,19 +74,11 @@ export const useAuthClient = (options = defaultOptions) => {
     });
 
     setWhoamiActor(actor);
-
-    if(isAuthenticated){
-      setCredentials(client)
-    }
-
   }
 
   async function logout() {
     await authClient?.logout();
-    setIsAdmin('')
-    setIsGraduate('')
     await updateClient(authClient);
-    
   }
 
   return {
@@ -134,12 +89,6 @@ export const useAuthClient = (options = defaultOptions) => {
     identity,
     principal,
     whoamiActor,
-    isAdmin,
-    isGraduate,
-    setIsAdmin,
-    setIsGraduate,
-    isLoading,
-    setIsLoading
   };
 };
 
